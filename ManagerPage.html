@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Simple login form</title>
+    <style>
+      html, body {
+      display: flex;
+      justify-content: center;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 15px;
+      }
+      form {
+      border: 5px solid #f1f1f1;
+      }
+      input[type=text], input[type=Order] {
+      width: 100%;
+      padding: 16px 8px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      }
+      button {
+      background-color: #8ebf42;
+      color: white;
+      padding: 14px 0;
+      margin: 10px 0;
+      border: none;
+      cursor: grabbing;
+      width: 100%;
+      }
+      h1 {
+      text-align:center;
+      fone-size:18;
+      }
+      button:hover {
+      opacity: 0.8;
+      }
+      .formcontainer {
+      text-align: left;
+      margin: 24px 50px 12px;
+      }
+      .container {
+      padding: 16px 0;
+      text-align:left;
+      }
+      span.psw {
+      float: right;
+      padding-top: 0;
+      padding-right: 15px;
+      }
+      /* Change styles for span on extra small screens */
+      @media screen and (max-width: 300px) {
+      span.psw {
+      display: block;
+      float: none;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="proj.php">
+      <h1>Manager Page</h1>
+      <div class="formcontainer">
+      <hr/>
+      <div class="container">
+        <label for="stock"><strong>Stock of Ingredients of Each Restaurant</strong></label>
+      </div>
+      <label for="restaurants">Choose a Restaurant:</label>
+        <select id="restaurants" name="restaurants">
+          <option value="RR">Rough Rider Pizza </option>
+          <option value="Den">The Den</option>
+          <option value="Melt">Melt</option>
+        </select>
+        <input type="submit">
+
+        var restaurant = document.getElementById("restaurants").value;
+
+        <?php
+            ini_set ('display_errors', 1);
+            ini_set ('display_startup_errors', 1);
+
+            $Restaurant = $_POST['restuarants']
+
+            //$host = 'localhost';
+
+            // IP:PORT NUMBER
+            $host  = '127.0.0.1:3307';
+            // Username of the database
+            $username = 'root';
+            // Password of the database
+            $password = 'handlermike_2020!';
+            // Name of Database
+            $database = 'FoodManagement';
+
+            //Initializes MySQLi
+            $conn = mysqli_init();
+
+            // Establish the connection
+            $conn = new mysqli("localhost","my_user","my_password","my_db");
+
+            //If connection failed, show the error
+            if (mysqli_connect_errno($conn))
+            {
+                die('Failed to connect to MySQL: '.mysqli_connect_error());
+            }
+
+            echo 'Connected successfully to Database';
+
+            // Display Stock of ingredients from each restaurant
+            $Restock = "SELECT restaurantName, ingredientName, stock
+                        FROM Ingredient, INVENTORY, Restaurant
+                        WHERE Ingredient.ingredientid = INVENTORY.ingredientid AND INVENTORY.restaurantid = RESTAURANT.restaurantid AND RESTAURANT.restaurantname = $Restaurant"
+
+            $result = $conn->query($Restock)
+            while($row = mysql_fetch_array($result)){
+                echo "<tr><td>" . $row['restaurantName'] . "</td><td>" . $row['ingredientName'] . "</td><td>". $row['stock'] . "</td><tr><br><br>";
+            }
+            }
+        ?>
+
+      </div>
+    </form>
+
+
+  </body>
+</html>

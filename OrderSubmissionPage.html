@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Simple login form</title>
+    <style>
+      html, body {
+      display: flex;
+      justify-content: center;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 15px;
+      }
+      form {
+      border: 5px solid #f1f1f1;
+      }
+      input[type=text], input[type=Order] {
+      width: 100%;
+      padding: 16px 8px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      }
+      button {
+      background-color: #8ebf42;
+      color: white;
+      padding: 14px 0;
+      margin: 10px 0;
+      border: none;
+      cursor: grabbing;
+      width: 100%;
+      }
+      h1 {
+      text-align:center;
+      fone-size:18;
+      }
+      button:hover {
+      opacity: 0.8;
+      }
+      .formcontainer {
+      text-align: left;
+      margin: 24px 50px 12px;
+      }
+      .container {
+      padding: 16px 0;
+      text-align:left;
+      }
+      span.psw {
+      float: right;
+      padding-top: 0;
+      padding-right: 15px;
+      }
+      /* Change styles for span on extra small screens */
+      @media screen and (max-width: 300px) {
+      span.psw {
+      display: block;
+      float: none;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="proj.php">
+      <h1>The Den Order Submission</h1>
+      <div class="formcontainer">
+      <hr/>
+      <div class="container">
+        <label for="FirstName"><strong>Name For Order</strong></label>
+        <input type="text" placeholder="Enter the name for the order" id="name" name="FirstName" required>
+        <label for="ord"><strong>Order</strong></label>
+        <input type="Order" placeholder="Enter an order seperated by commas" id="order" name="ord" required>
+      </div>
+      <button type = "submit" onclick=order()"">Submit</button>
+      <div class="container">
+        <label for="RestockName"><strong>Name of Ingredient to Restock</strong></label>
+        <input type="text" placeholder="Enter the name of ingredient to restock" id="restockname" name="RestockName" required>
+        <label for="RestockAmount"><strong>Amount of Ingredient to add to inventory</strong></label>
+        <input type="text" placeholder="Enter an Amount to Add to restock" id="restockamount" name="RestockAmount" required>
+      </div>
+      <button type = "Restock" onclick=restock()"">Restock Item</button>
+    </form>
+
+    <?php
+        ini_set ('display_errors', 1);
+        ini_set ('display_startup_errors', 1);
+
+        // IP:PORT NUMBER
+        $host  = '127.0.0.1:3307';
+        // Username of the database
+        $username = 'root';
+        // Password of the database
+        $password = 'handlermike_2020!';
+        // Name of Database
+        $database = 'FoodManagement';
+
+        //Initializes MySQLi
+        $conn = mysqli_init();
+
+        // Establish the connection
+        $conn = new mysqli("localhost","my_user","my_password","my_db");
+
+        //If connection failed, show the error
+        if (mysqli_connect_errno($conn))
+        {
+            die('Failed to connect to MySQL: '.mysqli_connect_error());
+        }
+
+        echo 'Connected successfully to Database';
+
+        // Restock the items less than 5
+        function restock(){
+          $restockname = $_POST['RestockName']
+          $restockamount = $_POST['RestockAmount']
+          $Restock = "UPDATE INVENTORY
+                          set stock = stock + $restockamount
+                          WHERE ingredientid in (SELECT ingredientid
+                          FROM INGREDIENT
+                          WHERE INGREDIENT.ingredientid = $restockname)"
+
+          if ($conn->query($Restock) === TRUE) {
+            echo "Restock successfull";
+          } else {
+            echo "Error Restocking: " . $conn->error;
+          }
+
+          echo '<script type="text/javascript"> cleartext2(); </script>';
+        }
+
+        // Remove item from Database
+        function order(){
+          $string = $_POST['ord'];
+          $str_arr = explode (",", $string);
+
+          foreach ($str_arr as $item){
+            // Get specific Query
+            $UpdateItems = "UPDATE INVENTORY
+                            set stock = stock - 1
+                            WHERE ingredientid in (SELECT ingredientid
+                            FROM INGREDIENTSOFITEM, ITEM
+                            WHERE ITEM.itemName = $item AND ITEM.itemid = INGREDIENTSOFITEM.itemid)";
+
+            if ($conn->query($Restock) === TRUE) {
+              echo "Order Submitted";
+            } else {
+              echo "Error Submitting order: " . $conn->error;
+            }
+          }
+
+          echo '<script type="text/javascript"> cleartext1(); </script>';
+        }
+    ?>
+
+    <script type="text/javascript">
+    function cleartext1()
+    {
+         document.getElementById('order').value = '';
+         document.getElementById('name').value = '';
+    }
+    function cleartext2()
+    {
+      document.getElementById('restockname').value = '';
+      document.getElementById('restockamount').value = '';
+    }
+    </script>
+
+  </body>
+</html>
